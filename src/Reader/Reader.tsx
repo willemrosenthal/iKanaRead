@@ -112,88 +112,108 @@ export const Reader: React.FC = () => {
     hideTooltip();
   };
 
+  const setUpChapter = (contents: any) => {
+    // prevent this from running multiple times
+    if (translatedChapters.has(page.chapter)) return;
+
+    textNodes.current = contents.window.document.evaluate(
+      "//text()",
+      contents.window.document.body,
+      null,
+      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+      null
+    );
+
+    transformTextNodes(contents);
+
+    contents.window.document.addEventListener("click", (e: MouseEvent) => {
+      if (tooltipTimeout) {
+        hideTooltip();
+      } else {
+        setDisplayWordInfo(true);
+        tooltipTimeout = setTimeout(() => {
+          setDisplayWordInfo(false);
+        }, 3000);
+      }
+    });
+
+    contents.window.document.addEventListener("mousemove", (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target === hoverTarget.current) {
+        setMousePosition({
+          x: e.screenX,
+          y: e.clientY,
+        });
+        return;
+      }
+      hideTooltip();
+      hoverTarget.current = target;
+      const engWord = target.getAttribute("data-eng") || "";
+      const kanaWord = target.getAttribute("data-kana") || "";
+      if (engWord) {
+        // console.log("Clicked word:", engWord);
+        setTooltipData({
+          engWord,
+          kanaWord,
+        });
+        setMousePosition({
+          x: e.screenX,
+          y: e.clientY,
+        });
+        // // get distance from mouse to left edge of window
+        // const distance = e.screenX; // - window.innerWidth / 2;
+        // console.log("distance", distance);
+      } else {
+        setTooltipData(null);
+      }
+    });
+
+    // Add styles for hoverable words
+    const style = contents.window.document.createElement("style");
+    style.textContent = `
+      .hoverable-word {
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .kana-word {
+        cursor: pointer;
+        margin: 0px 2px;
+      }
+      .a {
+        color: #7A7A7A;
+      }
+      .b {
+        color: #000;
+      }
+      .hoverable-word:hover {
+        background-color: yellow;
+      }
+    `;
+    contents.window.document.head.appendChild(style);
+  };
+
+  const deregisterChapter = (contents: any) => {
+    contents.window.document.removeEventListener("click", (e: MouseEvent) => {
+      if (tooltipTimeout) {
+        hideTooltip();
+      }
+    });
+    contents.window.document.removeEventListener(
+      "mousemove",
+      (e: MouseEvent) => {
+        hideTooltip();
+      }
+    );
+  };
+
   useEffect(() => {
     if (rendition.current) {
       // Add a content hook that runs when each section is loaded
       rendition.current.hooks.content.register((contents: any) => {
-        // Get all text nodes in the content
-        textNodes.current = contents.window.document.evaluate(
-          "//text()",
-          contents.window.document.body,
-          null,
-          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-          null
-        );
-
-        transformTextNodes(contents);
-
-        contents.window.document.addEventListener("click", (e: MouseEvent) => {
-          if (tooltipTimeout) {
-            hideTooltip();
-          } else {
-            setDisplayWordInfo(true);
-            tooltipTimeout = setTimeout(() => {
-              setDisplayWordInfo(false);
-            }, 3000);
-          }
-        });
-
-        contents.window.document.addEventListener(
-          "mousemove",
-          (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (target === hoverTarget.current) {
-              setMousePosition({
-                x: e.screenX,
-                y: e.clientY,
-              });
-              return;
-            }
-            hideTooltip();
-            hoverTarget.current = target;
-            const engWord = target.getAttribute("data-eng") || "";
-            const kanaWord = target.getAttribute("data-kana") || "";
-            if (engWord) {
-              // console.log("Clicked word:", engWord);
-              setTooltipData({
-                engWord,
-                kanaWord,
-              });
-              setMousePosition({
-                x: e.screenX,
-                y: e.clientY,
-              });
-              // // get distance from mouse to left edge of window
-              // const distance = e.screenX; // - window.innerWidth / 2;
-              // console.log("distance", distance);
-            } else {
-              setTooltipData(null);
-            }
-          }
-        );
-
-        // Add styles for hoverable words
-        const style = contents.window.document.createElement("style");
-        style.textContent = `
-          .hoverable-word {
-            cursor: pointer;
-            transition: background-color 0.2s;
-          }
-          .kana-word {
-            cursor: pointer;
-            margin: 0px 2px;
-          }
-          .a {
-            color: #7A7A7A;
-          }
-          .b {
-            color: #000;
-          }
-          .hoverable-word:hover {
-            background-color: yellow;
-          }
-        `;
-        contents.window.document.head.appendChild(style);
+        setUpChapter(contents);
+      });
+      rendition.current.hooks.content.deregister((contents: any) => {
+        deregisterChapter(contents);
       });
     }
   });
@@ -210,15 +230,10 @@ export const Reader: React.FC = () => {
 
           // initial translation
           _rendition.hooks.content.register((contents: any) => {
-            console.log("contents - A", contents);
-            const nodes = contents.window.document.evaluate(
-              "//text()",
-              contents.window.document.body,
-              null,
-              XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-              null
-            );
-            transformTextNodes(contents, nodes);
+            setUpChapter(contents);
+          });
+          rendition.current.hooks.content.deregister((contents: any) => {
+            deregisterChapter(contents);
           });
 
           _rendition.on("relocated", (location: any) => {
