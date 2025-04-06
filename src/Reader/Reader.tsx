@@ -30,6 +30,8 @@ interface PageNumber {
 
 const translatedChapters = new Set();
 
+let tooltipTimeout: NodeJS.Timeout | null = null;
+
 export const Reader: React.FC = () => {
   const [location, setLocation] = useState<string | number>(0);
   const rendition = useRef<Rendition | undefined>(undefined);
@@ -92,9 +94,17 @@ export const Reader: React.FC = () => {
     }
   };
 
+  const hideTooltip = () => {
+    setDisplayWordInfo(false);
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = null;
+    }
+  };
+
   const changeLoc = (loc: string) => {
     setLocation(loc);
-    setDisplayWordInfo(false);
+    hideTooltip();
   };
 
   useEffect(() => {
@@ -113,7 +123,14 @@ export const Reader: React.FC = () => {
         transformTextNodes(contents);
 
         contents.window.document.addEventListener("click", (e: MouseEvent) => {
-          setDisplayWordInfo(true);
+          if (tooltipTimeout) {
+            hideTooltip();
+          } else {
+            setDisplayWordInfo(true);
+            tooltipTimeout = setTimeout(() => {
+              setDisplayWordInfo(false);
+            }, 3000);
+          }
         });
 
         contents.window.document.addEventListener(
@@ -127,7 +144,7 @@ export const Reader: React.FC = () => {
               });
               return;
             }
-            setDisplayWordInfo(false);
+            hideTooltip();
             hoverTarget.current = target;
             const engWord = target.getAttribute("data-eng") || "";
             const kanaWord = target.getAttribute("data-kana") || "";

@@ -3,7 +3,7 @@ import React from "react";
 import "./App.css";
 // import { ReadTest } from "./ReaderOriginal/ReadTest3";
 // import { Reader } from "./Reader2/Reader";
-import { Reader } from "./Reader3/Reader";
+import { Reader } from "./Reader/Reader";
 
 function App() {
   return (

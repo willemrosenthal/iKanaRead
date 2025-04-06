@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { saveData, getData } from "./helpers/storage";
-import { handleFormatting } from "./helpers/format";
 
 interface TextRow {
   id: string;
@@ -32,17 +31,16 @@ export const StorageText: React.FC = () => {
   };
 
   const updateRow = (id: string, field: "label" | "content", value: string) => {
-    const input = document.activeElement as HTMLInputElement;
-    const cursorPosition = input?.selectionStart || 0;
-
-    const updatedRows = rows.map((row) => {
-      const valueToAdd =
-        field === "content"
-          ? handleFormatting(value, cursorPosition, input)
-          : value;
-      return row.id === id ? { ...row, [field]: valueToAdd } : row;
-    });
-    setRows(updatedRows);
+    // const input = document.activeElement as HTMLInputElement;
+    // const cursorPosition = input?.selectionStart || 0;
+    // const updatedRows = rows.map((row) => {
+    //   const valueToAdd =
+    //     field === "content"
+    //       ? handleFormatting(value, cursorPosition, input)
+    //       : value;
+    //   return row.id === id ? { ...row, [field]: valueToAdd } : row;
+    // });
+    // setRows(updatedRows);
   };
 
   const deleteRow = async (id: string) => {
