@@ -9,6 +9,7 @@ import {
 } from "../english-to-katakana/services/TranscriptionService";
 import { TranscriptionResult } from "../english-to-katakana/types";
 import "./reader.css";
+import { useStorage } from "../hooks/useStorage";
 
 export interface TooltipData {
   engWord: string;
@@ -33,7 +34,8 @@ const translatedChapters = new Set();
 let tooltipTimeout: NodeJS.Timeout | null = null;
 
 export const Reader: React.FC = () => {
-  const [location, setLocation] = useState<string | number>(0);
+  // const [location, setLocation] = useState<string | number>(0);
+  const [location, setLocation] = useStorage<string | number>("book-loc", 0);
   const rendition = useRef<Rendition | undefined>(undefined);
 
   const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
@@ -52,15 +54,18 @@ export const Reader: React.FC = () => {
     chapter: 0,
   });
 
-  const transformTextNodes = (contents: any) => {
-    console.log("transformTextNodes");
+  const transformTextNodes = (contents: any, txtNodes?: XPathResult) => {
     if (translatedChapters.has(page.chapter)) return;
     translatedChapters.add(page.chapter);
-    // Process each text node
-    if (!textNodes.current || !contents) return;
 
-    for (let i = 0; i < textNodes.current.snapshotLength; i++) {
-      const textNode = textNodes.current.snapshotItem(i);
+    // get nodes
+    const nodes = txtNodes || textNodes.current;
+    if (!nodes || !contents) return;
+
+    // Process each text node
+    for (let i = 0; i < nodes.snapshotLength; i++) {
+      console.log("textNodes.current.snapshotLength", nodes.snapshotLength);
+      const textNode = nodes.snapshotItem(i);
 
       if (textNode && textNode.textContent?.trim()) {
         // Create a span to replace the text node
@@ -202,6 +207,20 @@ export const Reader: React.FC = () => {
         locationChanged={changeLoc}
         getRendition={(_rendition: Rendition) => {
           rendition.current = _rendition;
+
+          // initial translation
+          _rendition.hooks.content.register((contents: any) => {
+            console.log("contents - A", contents);
+            const nodes = contents.window.document.evaluate(
+              "//text()",
+              contents.window.document.body,
+              null,
+              XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+              null
+            );
+            transformTextNodes(contents, nodes);
+          });
+
           _rendition.on("relocated", (location: any) => {
             const currentPage = location.start.displayed.page;
             const totalPages = location.start.displayed.total;
