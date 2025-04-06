@@ -141,8 +141,8 @@ export const Reader: React.FC = () => {
       const target = e.target as HTMLElement;
       if (target === hoverTarget.current) {
         setMousePosition({
-          x: e.screenX,
-          y: e.clientY,
+          x: 100, //e.screenX,
+          y: 100, //e.clientY,
         });
         return;
       }
@@ -157,8 +157,8 @@ export const Reader: React.FC = () => {
           kanaWord,
         });
         setMousePosition({
-          x: e.screenX,
-          y: e.clientY,
+          x: 100, //e.screenX,
+          y: 100, //e.clientY,
         });
         // // get distance from mouse to left edge of window
         // const distance = e.screenX; // - window.innerWidth / 2;
