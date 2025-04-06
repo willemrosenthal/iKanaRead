@@ -1,5 +1,5 @@
-import { Rendition } from "epubjs";
 import React, { useRef, useState, useEffect } from "react";
+import { Rendition } from "epubjs";
 import { ReactReader } from "react-reader";
 import { toHiragana } from "wanakana";
 import { WordTooltip } from "../components/WordTooltip";
@@ -8,8 +8,8 @@ import {
   transcribeSentenceArray,
 } from "../english-to-katakana/services/TranscriptionService";
 import { TranscriptionResult } from "../english-to-katakana/types";
-import "./reader.css";
 import { useStorage } from "../hooks/useStorage";
+import "./reader.css";
 
 export interface TooltipData {
   engWord: string;
@@ -137,6 +137,17 @@ export const Reader: React.FC = () => {
       }
     });
 
+    contents.window.document.addEventListener("touchstart", (e: TouchEvent) => {
+      if (tooltipTimeout) {
+        hideTooltip();
+      } else {
+        setDisplayWordInfo(true);
+        tooltipTimeout = setTimeout(() => {
+          setDisplayWordInfo(false);
+        }, 3000);
+      }
+    });
+
     contents.window.document.addEventListener("mousemove", (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target === hoverTarget.current) {
@@ -208,7 +219,6 @@ export const Reader: React.FC = () => {
 
   useEffect(() => {
     if (rendition.current) {
-      // Add a content hook that runs when each section is loaded
       rendition.current.hooks.content.register((contents: any) => {
         setUpChapter(contents);
       });
@@ -217,6 +227,38 @@ export const Reader: React.FC = () => {
       });
     }
   });
+
+  // const removeStyles = (contents: any) => {
+  //   const body = contents.window.document.body;
+  //   // Remove the style attribute completely and set new styles
+  //   body.removeAttribute("style");
+  //   body.setAttribute("style", "");
+  //   contents.window.document.body.removeAttribute("padding-left");
+  //   body.style["padding-left"] = "0px";
+  //   contents.window.document.body.removeAttribute("padding-right");
+  //   body.style["padding-right"] = "0px";
+  //   console.log("body", body);
+  //   // Then set the styles we want to keep, excluding padding
+  //   // body.style.cssText = `
+  //   //       width: 311px;
+  //   //       height: 727px;
+  //   //       overflow-y: hidden;
+  //   //       margin: 0px !important;
+  //   //       box-sizing: border-box;
+  //   //       max-width: inherit;
+  //   //       column-fill: auto;
+  //   //       column-gap: 24px;
+  //   //       column-width: 311px;
+  //   //     `;
+  // };
+
+  // useEffect(() => {
+  //   if (rendition.current) {
+  //     rendition.current.hooks.content.register((contents: any) => {
+  //       removeStyles(contents);
+  //     });
+  //   }
+  // }, []);
 
   return (
     <div style={{ height: "100vh" }}>
@@ -231,6 +273,7 @@ export const Reader: React.FC = () => {
           // initial translation
           _rendition.hooks.content.register((contents: any) => {
             setUpChapter(contents);
+            // removeStyles(contents);
           });
           rendition.current.hooks.content.deregister((contents: any) => {
             deregisterChapter(contents);
