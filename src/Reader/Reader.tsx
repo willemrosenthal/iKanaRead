@@ -300,7 +300,9 @@ export const Reader: React.FC = () => {
       >
         P: {page.currentPage} - C: {page.chapter}
       </div>
-      {tooltipData && displayWordInfo && (
+      {tooltipData && (
+        // {tooltipData && displayWordInfo && (
+
         <WordTooltip data={tooltipData} position={mousePosition} />
       )}
     </div>
