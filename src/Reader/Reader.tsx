@@ -141,8 +141,12 @@ export const Reader: React.FC = () => {
       }
     };
 
-    contents.window.document.addEventListener("click", (e: MouseEvent) => {
-      click();
+    contents.window.document.addEventListener("mousedown", (e: MouseEvent) => {
+      // click();
+      setDisplayWordInfo(true);
+    });
+    contents.window.document.addEventListener("mouseup", (e: MouseEvent) => {
+      hideTooltip();
     });
 
     // contents.window.document.addEventListener("touchstart", (e: TouchEvent) => {
