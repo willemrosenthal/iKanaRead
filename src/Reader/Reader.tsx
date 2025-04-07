@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Rendition } from "epubjs";
-import { ReactReader } from "react-reader";
+import { ReactReader, ReactReaderStyle } from "react-reader";
 import { toHiragana } from "wanakana";
 import { WordTooltip } from "../components/WordTooltip";
 import {
@@ -10,6 +10,41 @@ import {
 import { TranscriptionResult } from "../english-to-katakana/types";
 import { useStorage } from "../hooks/useStorage";
 import "./reader.css";
+
+const ownStyles = {
+  ...ReactReaderStyle,
+  reader: {
+    ...ReactReaderStyle.reader,
+    textDecoration: "line-through",
+    backgroundColor: "yellow",
+    overflow: "hidden",
+    touchAction: "none",
+  },
+  toc: {
+    ...ReactReaderStyle.toc,
+    textDecoration: "line-through",
+    backgroundColor: "orange",
+  },
+  readerArea: {
+    ...ReactReaderStyle.readerArea,
+    textDecoration: "line-through",
+    paddingBottom: "0 !important",
+    overflow: "hidden",
+    touchAction: "none",
+    backgroundColor: "blue",
+    color: "green !important",
+
+    // WebkitUserSelect: "none", // Safari, Chrome
+    // MozUserSelect: "none", // Firefox
+    // msUserSelect: "none", // IE/Edge
+    // userSelect: "none", // Standard syntax
+    // WebkitTouchCallout: "none", // iOS Safari
+  },
+  arrow: {
+    ...ReactReaderStyle.arrow,
+    color: "red",
+  },
+};
 
 export interface TooltipData {
   engWord: string;
@@ -271,6 +306,10 @@ export const Reader: React.FC = () => {
           allowPopups: true, // Adds `allow-popups` to sandbox-attribute
           allowScriptedContent: true, // Adds `allow-scripts` to sandbox-attribute
         }}
+        readerStyles={ownStyles}
+        //   overflow: "hidden",
+        //   touchAction: "none",
+        // }}
         getRendition={(_rendition: Rendition) => {
           rendition.current = _rendition;
 
