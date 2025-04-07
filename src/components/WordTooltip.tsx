@@ -48,7 +48,7 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
   const { roman, kana } = romanji();
 
   const yOffset =
-    position?.y && position.y > window.innerHeight * 0.97 ? -255 : -140;
+    position?.y && position.y > window.innerHeight * 1 ? -215 : -95;
 
   return (
     <div
@@ -70,6 +70,7 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
       }}
     >
       <div
+        key="english"
         style={{
           fontSize: "12px",
           paddingBottom: "6px",
@@ -79,8 +80,12 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
       >
         {data.engWord}
       </div>
-      <div style={{ display: "flex", gap: "4px" }}>{kana}</div>
-      <div style={{ display: "flex", gap: "4px" }}>{roman}</div>
+      <div key="kana" style={{ display: "flex", gap: "4px" }}>
+        {kana}
+      </div>
+      <div key="roman" style={{ display: "flex", gap: "4px" }}>
+        {roman}
+      </div>
     </div>
   );
 };

@@ -130,26 +130,23 @@ export const Reader: React.FC = () => {
 
     transformTextNodes(contents);
 
-    // contents.window.document.addEventListener("click", (e: MouseEvent) => {
-    //   if (tooltipTimeout) {
-    //     hideTooltip();
-    //   } else {
-    //     setDisplayWordInfo(true);
-    //     tooltipTimeout = setTimeout(() => {
-    //       setDisplayWordInfo(false);
-    //     }, 3000);
-    //   }
-    // });
+    const click = () => {
+      if (tooltipTimeout) {
+        hideTooltip();
+      } else {
+        setDisplayWordInfo(true);
+        tooltipTimeout = setTimeout(() => {
+          setDisplayWordInfo(false);
+        }, 3000);
+      }
+    };
+
+    contents.window.document.addEventListener("click", (e: MouseEvent) => {
+      click();
+    });
 
     // contents.window.document.addEventListener("touchstart", (e: TouchEvent) => {
-    //   if (tooltipTimeout) {
-    //     hideTooltip();
-    //   } else {
-    //     setDisplayWordInfo(true);
-    //     tooltipTimeout = setTimeout(() => {
-    //       setDisplayWordInfo(false);
-    //     }, 3000);
-    //   }
+    //   click();
     // });
 
     contents.window.document.addEventListener("mousemove", (e: MouseEvent) => {
@@ -197,28 +194,33 @@ export const Reader: React.FC = () => {
     contents.window.document.head.appendChild(style);
   };
 
-  // const deregisterChapter = (contents: any) => {
-  //   contents.window.document.removeEventListener("click", (e: MouseEvent) => {
-  //     if (tooltipTimeout) {
-  //       hideTooltip();
-  //     }
-  //   });
-  //   contents.window.document.removeEventListener(
-  //     "mousemove",
-  //     (e: MouseEvent) => {
-  //       hideTooltip();
-  //     }
-  //   );
-  // };
+  const deregisterChapter = (contents: any) => {
+    contents.window.document.removeEventListener("click", (e: MouseEvent) => {
+      if (tooltipTimeout) {
+        hideTooltip();
+      }
+    });
+    // contents.window.document.removeEventListener("tou", (e: MouseEvent) => {
+    //   if (tooltipTimeout) {
+    //     hideTooltip();
+    //   }
+    // });
+    contents.window.document.removeEventListener(
+      "mousemove",
+      (e: MouseEvent) => {
+        hideTooltip();
+      }
+    );
+  };
 
   useEffect(() => {
     if (rendition.current) {
       rendition.current.hooks.content.register((contents: any) => {
         setUpChapter(contents);
       });
-      // rendition.current.hooks.content.deregister((contents: any) => {
-      //   deregisterChapter(contents);
-      // });
+      rendition.current.hooks.content.deregister((contents: any) => {
+        deregisterChapter(contents);
+      });
     }
   });
 
@@ -254,73 +256,6 @@ export const Reader: React.FC = () => {
   //   }
   // }, []);
 
-  useEffect(() => {
-    const click = () => {
-      if (tooltipTimeout) {
-        hideTooltip();
-      } else {
-        setDisplayWordInfo(true);
-        tooltipTimeout = setTimeout(() => {
-          setDisplayWordInfo(false);
-        }, 3000);
-      }
-    };
-
-    window.document.addEventListener("click", (e: MouseEvent) => {
-      click();
-    });
-
-    window.document.addEventListener("touchstart", (e: TouchEvent) => {
-      click();
-    });
-
-    window.document.addEventListener("mousemove", (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target === hoverTarget.current) {
-        setMousePos(e.screenX, e.screenY);
-        return;
-      }
-      hideTooltip();
-      hoverTarget.current = target;
-      const engWord = target.getAttribute("data-eng") || "";
-      const kanaWord = target.getAttribute("data-kana") || "";
-      if (engWord) {
-        setTooltipData({
-          engWord,
-          kanaWord,
-        });
-        setMousePos(e.screenX, e.screenY);
-      } else {
-        setTooltipData(null);
-      }
-    });
-
-    // window.document.addEventListener("mousemove", (e: MouseEvent) => {
-    //   const target = e.target as HTMLElement;
-    //   if (target === hoverTarget.current) {
-    //     setMousePos(e.screenX, e.screenY);
-    //     return;
-    //   }
-    //   hoverTarget.current = target;
-    //   const engWord = target.getAttribute("data-eng") || "";
-    //   const kanaWord = target.getAttribute("data-kana") || "";
-    //   if (engWord) {
-    //     console.log("Clicked word:", engWord);
-    //     setTooltipData({
-    //       engWord,
-    //       kanaWord,
-    //     });
-    //     setMousePos(e.screenX, e.screenY);
-    //   }
-    // });
-
-    return () => {
-      window.document.removeEventListener("mousemove", (e: MouseEvent) => {});
-      window.document.removeEventListener("click", (e: MouseEvent) => {});
-      window.document.removeEventListener("touchstart", (e: TouchEvent) => {});
-    };
-  }, []);
-
   return (
     <div style={{ height: "100vh" }}>
       <ReactReader
@@ -328,6 +263,10 @@ export const Reader: React.FC = () => {
         // url="https://react-reader.metabits.no/files/alice.epub"
         location={location}
         locationChanged={changeLoc}
+        epubOptions={{
+          allowPopups: true, // Adds `allow-popups` to sandbox-attribute
+          allowScriptedContent: true, // Adds `allow-scripts` to sandbox-attribute
+        }}
         getRendition={(_rendition: Rendition) => {
           rendition.current = _rendition;
 
@@ -336,9 +275,9 @@ export const Reader: React.FC = () => {
             setUpChapter(contents);
             // removeStyles(contents);
           });
-          // rendition.current.hooks.content.deregister((contents: any) => {
-          //   deregisterChapter(contents);
-          // });
+          rendition.current.hooks.content.deregister((contents: any) => {
+            deregisterChapter(contents);
+          });
 
           _rendition.on("relocated", (location: any) => {
             const currentPage = location.start.displayed.page;
@@ -361,9 +300,8 @@ export const Reader: React.FC = () => {
       >
         P: {page.currentPage} - C: {page.chapter}
       </div>
-      {tooltipData && (
-        // {tooltipData && displayWordInfo && (
-
+      {/* {tooltipData && ( */}
+      {tooltipData && displayWordInfo && (
         <WordTooltip data={tooltipData} position={mousePosition} />
       )}
     </div>
