@@ -130,16 +130,16 @@ export const Reader: React.FC = () => {
 
     transformTextNodes(contents);
 
-    const click = () => {
-      if (tooltipTimeout) {
-        hideTooltip();
-      } else {
-        setDisplayWordInfo(true);
-        tooltipTimeout = setTimeout(() => {
-          setDisplayWordInfo(false);
-        }, 3000);
-      }
-    };
+    // const click = () => {
+    //   if (tooltipTimeout) {
+    //     hideTooltip();
+    //   } else {
+    //     setDisplayWordInfo(true);
+    //     tooltipTimeout = setTimeout(() => {
+    //       setDisplayWordInfo(false);
+    //     }, 3000);
+    //   }
+    // };
 
     contents.window.document.addEventListener("mousedown", (e: MouseEvent) => {
       // click();
@@ -294,6 +294,7 @@ export const Reader: React.FC = () => {
         }}
       />
       <div
+        className="locked-scroll"
         style={{
           width: "100%",
           position: "fixed",

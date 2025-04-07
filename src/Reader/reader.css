@@ -29,3 +29,8 @@
   left: 0;
   background-color: #fffffff3;
 }
+
+.locked-scroll {
+  overflow: hidden;
+  touch-action: none; /* only works if children don't have overflow specified */
+ }
