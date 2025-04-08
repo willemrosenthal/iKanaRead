@@ -229,8 +229,14 @@ export const Reader: React.FC = () => {
       .hoverable-word:hover {
         background-color: yellow;
       }
+      body {
+        overflow: hidden;
+        touch-action: none;
+      }
       .calibre {
         user-select: none;
+        overflow: hidden;
+        touch-action: none;
       }
       img {
         pointer-events: none;  
