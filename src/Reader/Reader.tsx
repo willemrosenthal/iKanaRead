@@ -11,40 +11,40 @@ import { TranscriptionResult } from "../english-to-katakana/types";
 import { useStorage } from "../hooks/useStorage";
 import "./reader.css";
 
-const ownStyles = {
-  ...ReactReaderStyle,
-  reader: {
-    ...ReactReaderStyle.reader,
-    textDecoration: "line-through",
-    backgroundColor: "yellow",
-    overflow: "hidden",
-    touchAction: "none",
-  },
-  toc: {
-    ...ReactReaderStyle.toc,
-    textDecoration: "line-through",
-    backgroundColor: "orange",
-  },
-  readerArea: {
-    ...ReactReaderStyle.readerArea,
-    textDecoration: "line-through",
-    paddingBottom: "0 !important",
-    overflow: "hidden",
-    touchAction: "none",
-    backgroundColor: "blue",
-    color: "green !important",
+// const ownStyles = {
+//   ...ReactReaderStyle,
+//   reader: {
+//     ...ReactReaderStyle.reader,
+//     textDecoration: "line-through",
+//     backgroundColor: "yellow",
+//     overflow: "hidden",
+//     touchAction: "none",
+//   },
+//   toc: {
+//     ...ReactReaderStyle.toc,
+//     textDecoration: "line-through",
+//     backgroundColor: "orange",
+//   },
+//   readerArea: {
+//     ...ReactReaderStyle.readerArea,
+//     textDecoration: "line-through",
+//     paddingBottom: "0 !important",
+//     overflow: "hidden",
+//     touchAction: "none",
+//     backgroundColor: "blue",
+//     color: "green !important",
 
-    // WebkitUserSelect: "none", // Safari, Chrome
-    // MozUserSelect: "none", // Firefox
-    // msUserSelect: "none", // IE/Edge
-    // userSelect: "none", // Standard syntax
-    // WebkitTouchCallout: "none", // iOS Safari
-  },
-  arrow: {
-    ...ReactReaderStyle.arrow,
-    color: "red",
-  },
-};
+//     // WebkitUserSelect: "none", // Safari, Chrome
+//     // MozUserSelect: "none", // Firefox
+//     // msUserSelect: "none", // IE/Edge
+//     // userSelect: "none", // Standard syntax
+//     // WebkitTouchCallout: "none", // iOS Safari
+//   },
+//   arrow: {
+//     ...ReactReaderStyle.arrow,
+//     color: "red",
+//   },
+// };
 
 export interface TooltipData {
   engWord: string;
@@ -229,6 +229,12 @@ export const Reader: React.FC = () => {
       .hoverable-word:hover {
         background-color: yellow;
       }
+      .calibre {
+        user-select: none;
+      }
+      img {
+        pointer-events: none;  
+      }
     `;
     contents.window.document.head.appendChild(style);
   };
@@ -306,7 +312,7 @@ export const Reader: React.FC = () => {
           allowPopups: true, // Adds `allow-popups` to sandbox-attribute
           allowScriptedContent: true, // Adds `allow-scripts` to sandbox-attribute
         }}
-        readerStyles={ownStyles}
+        // readerStyles={ownStyles}
         //   overflow: "hidden",
         //   touchAction: "none",
         // }}
