@@ -233,6 +233,15 @@ export const Reader: React.FC = () => {
         overflow: hidden;
         touch-action: none;
       }
+      body * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-touch-callout: none;
+        overflow: hidden;
+        touch-action: none;
+      }
       .calibre {
         user-select: none;
         overflow: hidden;
