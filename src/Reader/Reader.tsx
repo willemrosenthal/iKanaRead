@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Rendition } from "epubjs";
-import { ReactReader, ReactReaderStyle } from "react-reader";
+import { ReactReader, ReactReaderStyle, EpubViewStyle } from "react-reader";
 import { toHiragana } from "wanakana";
-import { WordTooltip } from "../components/WordTooltip";
+import { WordTooltip } from "../components/WordTooltip2";
 import {
   splitSentence,
   transcribeSentenceArray,
@@ -10,6 +10,64 @@ import {
 import { TranscriptionResult } from "../english-to-katakana/types";
 import { useStorage } from "../hooks/useStorage";
 import "./reader.css";
+
+const epubStyles = {
+  ...EpubViewStyle,
+  // view: {
+  //   width: "100%",
+  //   height: "100%",
+  //   // backgroundColor: "lime",
+  // },
+  viewHolder: {
+    width: "100%",
+    marginTop: "20px",
+    height: "calc(100% - 100px)",
+    // backgroundColor: "orange",
+  },
+};
+
+const ownStyles = {
+  ...ReactReaderStyle,
+  reader: {
+    paddingLeft: "10px;",
+    width: "calc(100% - 20px)",
+    height: "100%",
+    // paddingBottom: "100px",
+  },
+  container: {
+    display: "flex",
+    paddingLeft: "10px;",
+    width: "calc(100% - 20px)",
+    height: "100%",
+    left: "20px",
+    // paddingBottom: "100px",
+  },
+  // container: {
+  //   width: "100%",
+  //   height: "100%",
+  // },
+  // toc: {},
+  // tocArea: {},
+  // readerArea: {
+  //   width: "100%",
+  //   height: "100%",
+  // },
+  // // reader: {
+  // //   ...ReactReaderStyle.reader,
+  // //   textDecoration: "line-through",
+  // //   backgroundColor: "yellow",
+  // //   overflow: "hidden",
+  // //   touchAction: "none",
+  // // },
+  // readerArea: {
+  //   ...ReactReaderStyle.readerArea,
+  //   paddingBottom: "50 !important",
+  // },
+  // arrow: {
+  //   ...ReactReaderStyle.arrow,
+  //   color: "red",
+  // },
+};
 
 // const ownStyles = {
 //   ...ReactReaderStyle,
@@ -210,6 +268,27 @@ export const Reader: React.FC = () => {
     });
 
     // Add styles for hoverable words
+    // setTimeout(() => {
+    //   const body = contents.window.document.querySelector("body");
+    //   if (body) {
+    //     console.log(body);
+    //     Object.assign(body.style, {
+    //       width: "calc(100% - 40px)",
+    //       // height: "100%",
+    //       // backgroundColor: "red",
+    //       paddingLeft: "0px !important",
+    //       margin: "0 10px !important",
+    //       padding: "0 !important",
+    //       // Add any other body styles you need
+    //     });
+    //     // body.style.cssText = `
+    //     // width: 100%;
+    //     // height: 100%;
+    //     // padding-left: 0 !important;
+    //     // background-color: salmon;
+    //     // `;
+    //   }
+    // }, 1000);
     const style = contents.window.document.createElement("style");
     style.textContent = `
       .hoverable-word {
@@ -241,11 +320,14 @@ export const Reader: React.FC = () => {
         -webkit-touch-callout: none;
         overflow: hidden;
         touch-action: none;
+        margin-left: 20px;
       }
       .calibre {
         user-select: none;
         overflow: hidden;
         touch-action: none;
+        padding-left: 0 !important !important;
+        padding-right: 0 !important;
       }
       img {
         pointer-events: none;  
@@ -318,6 +400,9 @@ export const Reader: React.FC = () => {
 
   return (
     <div style={{ height: "100vh" }}>
+      {tooltipData && displayWordInfo && (
+        <WordTooltip data={tooltipData} position={mousePosition} />
+      )}
       <ReactReader
         url={"files/Alices Adventures in Wonderland.epub"}
         // url="https://react-reader.metabits.no/files/alice.epub"
@@ -327,10 +412,8 @@ export const Reader: React.FC = () => {
           allowPopups: true, // Adds `allow-popups` to sandbox-attribute
           allowScriptedContent: true, // Adds `allow-scripts` to sandbox-attribute
         }}
-        // readerStyles={ownStyles}
-        //   overflow: "hidden",
-        //   touchAction: "none",
-        // }}
+        readerStyles={ownStyles}
+        epubViewStyles={epubStyles}
         getRendition={(_rendition: Rendition) => {
           rendition.current = _rendition;
 
@@ -363,7 +446,7 @@ export const Reader: React.FC = () => {
           zIndex: 1000,
         }}
       >
-        P: {page.currentPage} - C: {page.chapter}
+        {/* P: {page.currentPage} - C: {page.chapter} */}
       </div>
       {/* {tooltipData && ( */}
       {tooltipData && displayWordInfo && (
