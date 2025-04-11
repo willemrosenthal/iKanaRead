@@ -305,8 +305,23 @@ export const Reader: React.FC = () => {
       .b {
         color: #000;
       }
-      .hoverable-word:hover {
-        background-color: yellow;
+      .hoverable-word:hover,
+      .hoverable-word:active {
+        background-color: lime;
+      }
+
+      /* Specific styles for touch devices */
+      @media (hover: none) and (pointer: coarse) {
+        .hoverable-word:active {
+          background-color: lime;
+        }
+      }
+
+      /* For devices that support touch events but also have hover */
+      @media (hover: hover) and (pointer: fine) {
+        .hoverable-word:hover {
+          background-color: lime;
+        }
       }
       body {
         overflow: hidden;
