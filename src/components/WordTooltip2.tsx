@@ -65,7 +65,7 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
         bottom: 0, //(position?.y || 0) + yOffset, // Offset to show below the word
         backgroundColor: "white",
         border: "1px solid #ccc",
-        padding: "8px 8px 16px 8px",
+        padding: "2px 0 20px",
         // borderRadius: "4px",
         // boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
         zIndex: 1000,
