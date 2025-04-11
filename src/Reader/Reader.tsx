@@ -252,7 +252,7 @@ export const Reader: React.FC = () => {
         setMousePos(e.screenX, e.screenY);
         return;
       }
-      hideTooltip();
+      // hideTooltip();
       hoverTarget.current = target;
       const engWord = target.getAttribute("data-eng") || "";
       const kanaWord = target.getAttribute("data-kana") || "";
@@ -400,9 +400,9 @@ export const Reader: React.FC = () => {
 
   return (
     <div style={{ height: "100vh" }}>
-      {tooltipData && displayWordInfo && (
-        <WordTooltip data={tooltipData} position={mousePosition} />
-      )}
+      {/* {tooltipData && displayWordInfo && ( */}
+      <WordTooltip data={tooltipData} position={mousePosition} />
+      {/* )} */}
       <ReactReader
         url={"files/Alices Adventures in Wonderland.epub"}
         // url="https://react-reader.metabits.no/files/alice.epub"

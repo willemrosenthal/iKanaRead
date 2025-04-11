@@ -3,7 +3,7 @@ import { TooltipData } from "../ReaderOriginal/ReadTest";
 import { toRomaji } from "wanakana";
 
 interface WordTooltipProps {
-  data: TooltipData;
+  data: TooltipData | null;
   position?: { x: number; y: number };
 }
 
@@ -21,34 +21,38 @@ let colorIndex = 0;
 
 export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
   const romanji = useCallback(() => {
-    const roman = [];
-    const kana = [];
-    const style = {
-      color: color[colorIndex],
-      fontWeight: "800",
-      margin: "0px 2px",
-      width: "18px",
-      justifyContent: "center",
-      alignItems: "center",
-    };
-    for (let i = 0; i < data.kanaWord.length; i++) {
-      const k = data.kanaWord[i];
-      const r = toRomaji(k);
+    if (data) {
+      const roman = [];
+      const kana = [];
+      const style = {
+        color: color[colorIndex],
+        fontWeight: "800",
+        margin: "0px 2px",
+        width: "18px",
+        justifyContent: "center",
+        alignItems: "center",
+      };
 
-      colorIndex = (colorIndex + 1) % color.length;
-      style.color = color[colorIndex];
+      for (let i = 0; i < data.kanaWord.length; i++) {
+        const k = data.kanaWord[i];
+        const r = toRomaji(k);
 
-      roman.push(<div style={{ ...style, fontSize: "10px" }}>{r}</div>);
+        colorIndex = (colorIndex + 1) % color.length;
+        style.color = color[colorIndex];
 
-      kana.push(<div style={{ ...style }}>{k}</div>);
+        roman.push(<div style={{ ...style, fontSize: "10px" }}>{r}</div>);
+
+        kana.push(<div style={{ ...style }}>{k}</div>);
+      }
+      return { roman, kana };
     }
-    return { roman, kana };
+    return {};
   }, [data]);
 
   const { roman, kana } = romanji();
 
-  const yOffset =
-    position?.y && position.y > window.innerHeight * 1 ? -215 : -95;
+  // const yOffset =
+  //   position?.y && position.y > window.innerHeight * 1 ? -215 : -95;
 
   return (
     <div
@@ -84,7 +88,7 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
           // borderBottom: "1px solid #ccc",
         }}
       >
-        {data.engWord}
+        {data?.engWord || ""}
       </div>
       <div
         style={{
@@ -98,13 +102,13 @@ export const WordTooltip: React.FC<WordTooltipProps> = ({ data, position }) => {
           key="kana"
           style={{ display: "flex", gap: "2px", justifyContent: "center" }}
         >
-          {kana}
+          {kana || ""}
         </div>
         <div
           key="roman"
           style={{ display: "flex", gap: "2px", justifyContent: "center" }}
         >
-          {roman}
+          {roman || ""}
         </div>
       </div>
     </div>
